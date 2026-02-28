@@ -504,8 +504,8 @@ function containerCard(c) {
 
         ${nets.length ? `<div class="divider"></div>
         <div class="detail-label">Networks</div>
-        <div style="margin-top:0.3rem">
-          ${nets.map(n => `<span class="detail-value tag">${esc(n)}</span>`).join('')}
+        <div style="margin-top:0.3rem;display:flex;flex-direction:column;gap:0.25rem">
+          ${nets.map(n => `<div><span class="detail-value tag">${esc(n)}</span></div>`).join('')}
         </div>` : ''}
 
         ${mounts.length ? `<div class="divider"></div>
