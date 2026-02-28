@@ -567,6 +567,20 @@ function containerCard(c) {
           ${env.length > 15 ? `<span style="font-size:0.75rem;color:var(--muted)">+${env.length-15} more</span>` : ''}
         </div>` : ''}
 
+        ${(() => {
+          const internalPrefixes = ['com.docker.compose.', 'org.opencontainers.image.', 'com.docker.swarm.'];
+          const userLabels = Object.entries(labels).filter(([k]) => !internalPrefixes.some(p => k.startsWith(p)));
+          if (!userLabels.length) return '';
+          return `<div class="divider"></div>
+          <div class="detail-label">Labels</div>
+          <div class="label-table">
+            ${userLabels.map(([k, v]) => `<div class="label-row">
+              <span class="label-key mono">${esc(k)}</span>
+              <span class="label-val">${esc(v)}</span>
+            </div>`).join('')}
+          </div>`;
+        })()}
+
         ${link ? `<div class="divider"></div>
         <div>
           <a href="${esc(link)}" target="_blank" class="info-link">

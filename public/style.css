@@ -463,6 +463,32 @@ body {
   margin: 0.1rem;
 }
 
+/* ── Label table ─────────────────────────────────────────────────────────── */
+.label-table {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.label-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.label-key {
+  color: var(--cyan);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  max-width: 55%;
+  word-break: break-all;
+}
+.label-val {
+  color: var(--text2);
+  word-break: break-all;
+}
+
 /* ── Resource bars ──────────────────────────────────────────────────────── */
 .resource-row {
   display: flex;
