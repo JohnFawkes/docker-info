@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docker Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐳</text></svg>" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-whale">🐳</span>
+        <span class="logo-text">Docker Dashboard</span>
+      </div>
+
+      <nav class="tabs" id="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="containers">Containers <span class="tab-badge" id="badge-containers"></span></button>
+        <button class="tab" data-tab="images">Images <span class="tab-badge" id="badge-images"></span></button>
+        <button class="tab" data-tab="networks">Networks <span class="tab-badge" id="badge-networks"></span></button>
+        <button class="tab" data-tab="volumes">Volumes <span class="tab-badge" id="badge-volumes"></span></button>
+      </nav>
+
+      <div class="header-right">
+        <span id="refresh-status" class="refresh-status"></span>
+        <button class="btn-refresh" id="btn-refresh" title="Refresh now">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading overlay -->
+  <div id="loading" class="loading-overlay">
+    <div class="loader">
+      <span class="loader-whale">🐳</span>
+      <p>Connecting to Docker daemon…</p>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ── Overview ── -->
+    <section id="tab-overview" class="tab-panel active">
+      <div class="section-title">Overview</div>
+
+      <!-- Summary cards -->
+      <div class="grid grid-4" id="summary-cards"></div>
+
+      <!-- Two column layout for host and docker info -->
+      <div class="grid grid-2" style="margin-top:1.5rem">
+        <div id="host-card"></div>
+        <div id="docker-card"></div>
+      </div>
+
+      <!-- Network interfaces -->
+      <div id="network-card" style="margin-top:1.5rem"></div>
+    </section>
+
+    <!-- ── Containers ── -->
+    <section id="tab-containers" class="tab-panel">
+      <div class="section-header">
+        <div class="section-title">Containers</div>
+        <div class="controls">
+          <div class="search-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="container-search" class="search-input" placeholder="Search containers…" />
+          </div>
+          <div class="filter-btns" id="container-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="running">Running</button>
+            <button class="filter-btn" data-filter="stopped">Stopped</button>
+          </div>
+        </div>
+      </div>
+      <div id="containers-list"></div>
+    </section>
+
+    <!-- ── Images ── -->
+    <section id="tab-images" class="tab-panel">
+      <div class="section-title">Images</div>
+      <div id="images-list"></div>
+    </section>
+
+    <!-- ── Networks ── -->
+    <section id="tab-networks" class="tab-panel">
+      <div class="section-title">Networks</div>
+      <div id="networks-list"></div>
+    </section>
+
+    <!-- ── Volumes ── -->
+    <section id="tab-volumes" class="tab-panel">
+      <div class="section-title">Volumes</div>
+      <div id="volumes-list"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    Docker Dashboard &mdash; Powered by Docker Socket Proxy
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

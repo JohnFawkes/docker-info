@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: docker-dashboard-proxy
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - CONTAINERS=1
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1
+      - VOLUMES=1
+      - SERVICES=1
+      - TASKS=1
+      - NODES=1
+      - EXEC=0
+      - POST=0
+      - DELETE=0
+      - AUTH=0
+      - SECRETS=0
+    networks:
+      - proxy-net
+    expose:
+      - "2375"
+
+  dashboard:
+    build: .
+    container_name: docker-dashboard
+    restart: unless-stopped
+    ports:
+      - "${DASHBOARD_PORT:-3000}:3000"
+    environment:
+      - DOCKER_HOST=tcp://socket-proxy:2375
+      - PORT=3000
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+    networks:
+      - proxy-net
+    depends_on:
+      - socket-proxy
+
+networks:
+  proxy-net:
+    driver: bridge
+    internal: false
