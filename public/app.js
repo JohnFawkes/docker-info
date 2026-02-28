@@ -367,7 +367,47 @@ function renderContainers() {
     return;
   }
 
-  html('containers-list', list.map(containerCard).join(''));
+  // Group by compose project; standalone containers go under null key
+  const groups = new Map();
+  for (const c of list) {
+    const labels  = c.inspect?.Config?.Labels || c.Labels || {};
+    const project = labels['com.docker.compose.project'] || null;
+    if (!groups.has(project)) groups.set(project, []);
+    groups.get(project).push(c);
+  }
+
+  // Sort: compose stacks first (alphabetically), then standalone last
+  const sorted = [...groups.entries()].sort(([a], [b]) => {
+    if (a === null) return 1;
+    if (b === null) return -1;
+    return a.localeCompare(b);
+  });
+
+  const parts = sorted.map(([project, containers]) => {
+    const runningCount = containers.filter(c => c.State === 'running').length;
+    const header = project
+      ? `<div class="stack-header">
+           <div class="stack-header-left">
+             <span class="stack-icon">⬡</span>
+             <span class="stack-name">${esc(project)}</span>
+             <span class="badge badge-gray">${containers.length} service${containers.length !== 1 ? 's' : ''}</span>
+           </div>
+           <span class="badge ${runningCount === containers.length ? 'badge-running' : runningCount === 0 ? 'badge-exited' : 'badge-blue'}">
+             ${runningCount}/${containers.length} running
+           </span>
+         </div>`
+      : `<div class="stack-header stack-header-standalone">
+           <div class="stack-header-left">
+             <span class="stack-icon">◻</span>
+             <span class="stack-name" style="color:var(--text2)">Standalone</span>
+             <span class="badge badge-gray">${containers.length}</span>
+           </div>
+         </div>`;
+
+    return `<div class="stack-group">${header}<div class="stack-body">${containers.map(containerCard).join('')}</div></div>`;
+  });
+
+  html('containers-list', parts.join(''));
 
   // Wire toggle expand
   document.querySelectorAll('.cc-header').forEach(el => {
