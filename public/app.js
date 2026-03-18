@@ -597,26 +597,38 @@ function containerCard(c) {
 }
 
 function updateStatsDOM(id) {
-  const st  = S.stats[id];
-  const el  = document.getElementById(`stats-${id}`);
+  const st = S.stats[id];
+  const el = document.getElementById(`stats-${id}`);
   if (!el || !st) return;
 
-  el.outerHTML = `<div id="stats-${id}">
-    <div class="resource-row">
-      <span class="resource-label">CPU</span>
-      <div class="resource-bar-wrap">
-        <div class="resource-bar cpu" style="width:${Math.min(st.cpu,100)}%"></div>
-      </div>
-      <span class="resource-val">${st.cpu}%</span>
-    </div>
-    <div class="resource-row">
-      <span class="resource-label">MEM</span>
-      <div class="resource-bar-wrap">
-        <div class="resource-bar mem" style="width:${Math.min(st.memPercent,100)}%"></div>
-      </div>
-      <span class="resource-val">${fmtBytes(st.memUsed)} / ${fmtBytes(st.memLimit)}</span>
-    </div>
-  </div>`;
+  el.textContent = '';
+  el.appendChild(resourceRow('CPU', `${st.cpu}%`,                          Math.min(st.cpu, 100),        'cpu'));
+  el.appendChild(resourceRow('MEM', `${fmtBytes(st.memUsed)} / ${fmtBytes(st.memLimit)}`, Math.min(st.memPercent, 100), 'mem'));
+}
+
+function resourceRow(label, valText, pct, cls) {
+  const row = document.createElement('div');
+  row.className = 'resource-row';
+
+  const lbl = document.createElement('span');
+  lbl.className = 'resource-label';
+  lbl.textContent = label;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'resource-bar-wrap';
+  const bar = document.createElement('div');
+  bar.className = `resource-bar ${cls}`;
+  bar.style.width = `${pct}%`;
+  wrap.appendChild(bar);
+
+  const val = document.createElement('span');
+  val.className = 'resource-val';
+  val.textContent = valText;
+
+  row.appendChild(lbl);
+  row.appendChild(wrap);
+  row.appendChild(val);
+  return row;
 }
 
 // ── Images ────────────────────────────────────────────────────────────────
@@ -800,7 +812,9 @@ function esc(str) {
 
 function html(id, markup) {
   const el = document.getElementById(id);
-  if (el) el.innerHTML = markup;
+  if (!el) return;
+  const doc = new DOMParser().parseFromString(`<body>${markup}</body>`, 'text/html');
+  el.replaceChildren(...doc.body.childNodes);
 }
 
 function set(id, val) {
