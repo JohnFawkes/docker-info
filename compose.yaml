@@ -5,6 +5,8 @@ services:
     image: tecnativa/docker-socket-proxy
     container_name: docker-dashboard-proxy
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -30,6 +32,8 @@ services:
     build: .
     container_name: docker-dashboard
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "${DASHBOARD_PORT:-3000}:3000"
     environment:
