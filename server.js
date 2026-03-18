@@ -17,6 +17,28 @@ const docker = axios.create({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+// ─── CSRF protection ─────────────────────────────────────────────────────────
+// All mutating state lives in the Docker daemon, not this app, so there are no
+// POST/PUT/DELETE routes. Nevertheless, block cross-origin reads of the API by
+// validating the Origin (or Referer) header on every /api request.
+app.use('/api', (req, res, next) => {
+  const origin = req.headers.origin || req.headers.referer;
+  // Requests with no Origin/Referer come from the same page (same-origin fetch
+  // without CORS), which is safe to allow.
+  if (!origin) return next();
+
+  try {
+    const requestHost = new URL(origin).host;
+    const serverHost  = req.headers.host;
+    if (requestHost !== serverHost) {
+      return res.status(403).json({ error: 'Forbidden: cross-origin request rejected' });
+    }
+  } catch {
+    return res.status(403).json({ error: 'Forbidden: invalid origin' });
+  }
+  next();
+});
+
 // ─── /proc helpers ──────────────────────────────────────────────────────────
 
 function readProc(file) {
