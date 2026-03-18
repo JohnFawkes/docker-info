@@ -221,9 +221,17 @@ app.get('/api/containers', async (req, res) => {
   }
 });
 
+// Docker container IDs are 64-char hex strings; short IDs are 12 chars.
+// Names are alphanumeric with hyphens/underscores (no slashes or traversal chars).
+const CONTAINER_ID_RE = /^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$/;
+
 app.get('/api/containers/:id/stats', async (req, res) => {
+  const id = req.params.id;
+  if (!CONTAINER_ID_RE.test(id)) {
+    return res.status(400).json({ error: 'Invalid container ID' });
+  }
   try {
-    const { data } = await docker.get(`/containers/${req.params.id}/stats?stream=false`);
+    const { data } = await docker.get(`/containers/${id}/stats?stream=false`);
     res.json(data);
   } catch (err) {
     res.status(503).json({ error: err.message });
