@@ -1,4 +1,4 @@
-FROM node:24-alpine
+FROM node:26-alpine
 
 # Upgrade all Alpine packages to patch OS-level vulnerabilities (e.g. zlib CVEs)
 RUN apk upgrade --no-cache
